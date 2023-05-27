@@ -29,7 +29,7 @@ const args = [
 	`--ctx-size 1024`,
 	`--prompt-cache-all`,
 
-	`--model \"${getRootPath("llama.models/ggml-v3-guanaco-13B-q4bit.bin")}\"`,
+	`--model \"${getRootPath("llama.models/ggml-v1.1-13B-q4bit.bin")}\"`,
 
 	//"--mlock", //save memory between executions
 	//" -e", // escape the prompt
