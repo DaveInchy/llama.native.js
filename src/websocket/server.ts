@@ -3,4 +3,4 @@ import { queryResponse } from "../index";
 
 const app = require("express")();
 
-const websocket = require("socket.io")(process.env["WS_PORT"])
+const socketServer = require("socket.io")(process.env["PORT"])

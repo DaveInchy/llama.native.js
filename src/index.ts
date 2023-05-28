@@ -3,12 +3,12 @@ import process from "process";
 import stream from "stream";
 import { escape } from "querystring";
 import { Socket } from "socket.io";
-import { executeCommand, saveResultAsHardMemory } from "./utils.js";
+import { executeCommand, saveResultAsHardMemory } from "./lib/utils.js";
 
 dotenv.config();
 
-const PWD = process.cwd() || "B:/Workspace/@AI/api";
-const getRootPath = (path = "") => PWD + "/../" + path?.toString();
+const currPath = process.cwd();
+const getRootPath = (path = "") => currPath + "/../" + path?.toString();
 
 const prompt = process.env["PROMPT"] ? process.env["PROMPT"] : process.env["INSTRUCTIONS"] || "Sorry jarvis, tony doesn't wanna speak with you about code right now. he'll be back by christmax";
 const executable = getRootPath("llama.exe");
@@ -29,7 +29,7 @@ const args = [
 	`--ctx-size 1024`,
 	`--prompt-cache-all`,
 
-	`--model \"${getRootPath("llama.models/ggml-v1.1-13B-q4bit.bin")}\"`,
+	`--model \"${getRootPath("llama.models/ggml-v3-guanaco-7B-q4bit.bin")}\"`,
 
 	//"--mlock", //save memory between executions
 	//" -e", // escape the prompt
@@ -42,8 +42,7 @@ const args = [
 
 	`-e`,
 
-	`-p`,
-	`\"\\n\\rCONTEXT: ${process.env[`CONTEXT`] || `You are a chatbot called Jarvis`}\\n\\n\\rINSTRUCTION: ${process.env[`PROMPT`] || `Write a Poem about the animal kingdom`} \\n\\n\\rRESPONSE: Allright, I would write the following code: \\n\\r` + "\`\`\`" + `typescript\\n\"`,
+	`-p`, `\"\\n\\rCONTEXT: ${process.env[`CONTEXT`] || `You are a chatbot called Jarvis`}\\n\\n\\rINSTRUCTION: ${process.env[`PROMPT`] || `Write a Poem about the animal kingdom`} \\n\\n\\rRESPONSE: Allright, I would write the following code: \\n\\r` + "\`\`\`" + `typescript\\n\"`,
 
 ];
 
@@ -78,4 +77,5 @@ export const queryResponse = (inference_prompt: Inference<any>["prompt"], infere
 			client.disconnect();
 		});
 }
+
 export default (prompt: Inference<any>["prompt"], context: Inference<any>["context"], type: Inference<any>["type"], client: Inference<any>["client"]) => queryResponse(prompt, context, type, client);
