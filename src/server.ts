@@ -19,7 +19,7 @@ app.use(express.static(getRootPath("/llama.public/")));
 app.use(cors());
 
 var waitingSocketIds: Array<[string, Socket]> = [];
-app.use("/", async (_req, _res, _next) => {
+app.use("/jarvis/demo/connect", async (_req, _res, _next) => {
 
     const request = _req;
     const response = _res;
