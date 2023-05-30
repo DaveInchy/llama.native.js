@@ -19,12 +19,13 @@
     ],
     "types": [
       "@types/node",
+      "mongodb"
     ],
     "allowUmdGlobalAccess": true,
     "resolveJsonModule": true,
     "allowJs": false,
     "checkJs": false,
-    "outDir": "./dist/",
+    "outDir": "bin",
     "removeComments": true,
     "noEmit": false,
     "importHelpers": true,
@@ -64,6 +65,6 @@
     "./dist/**/*",
     "./public/**/*",
     "./docs/**/*",
-    "./node_modules/**/*"
+    "/node_modules/**/*"
   ]
 }
