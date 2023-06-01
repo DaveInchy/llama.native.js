@@ -1,56 +1,7 @@
-import path from "path";
+import path from "node:path";
 
-// interface PipelineProps {
-
-
-// }
-// type PipelineType<T = Partial<Pipeline<Pipe[]>>> = T;
-
-// class Pipe {
-
-
-//     public constructor(): Promise<Pipe> {
-//         return this.execution();
-//     }
-
-//     async execution() {
-
-//         return this;
-//     }
-
-// }
-
-// interface Pipeline {
-
-// }
-
-
-// class Factory<T = Partial<PipelineProps>>
-// {
-//     config: T;
-
-//     public constructor(config: T, chain: Promise<Pipe>[]) {
-//         this.config = config;
-
-//         // go through chain
-//         this.runChain()
-
-//         return this;
-//     }
-
-//     runChain() {
-//         throw new Error("Method not implemented.");
-//     }
-// }
-
-const resolveCurrWorkDir = () => path.resolve(process.cwd());
-
-const resolvePath = (fileDir: string = "package.json") => {
-    return path.resolve(fileDir);
-}
 const parsePath = (filePath: string, isGitBash?: boolean) => {
     var old = (`${filePath}`);
-
 
     // Git Bash => CMD :: Win32 Drives
     if (old.includes("\/d\/")) old = old.replace("\/d\/", `D:\\`);
@@ -64,10 +15,10 @@ const parsePath = (filePath: string, isGitBash?: boolean) => {
     if (old.includes("@")) old = old.replace("@", `\@`);
 
     if (isGitBash) {
+        if (old.includes("A:/")) old = old.replace("A:/", `\/a\/`)
         if (old.includes("B:/")) old = old.replace("B:/", `\/b\/`)
-        if (old.includes("B:/")) old = old.replace("B:/", `\/b\/`)
-        if (old.includes("B:/")) old = old.replace("B:/", `\/b\/`)
-        if (old.includes("B:/")) old = old.replace("B:/", `\/b\/`)
+        if (old.includes("C:/")) old = old.replace("C:/", `\/c\/`)
+        if (old.includes("D:/")) old = old.replace("D:/", `\/d\/`)
     };
 
     // Spaces and line breaks
@@ -78,7 +29,7 @@ const parsePath = (filePath: string, isGitBash?: boolean) => {
     return oldAsNew;
 }
 
-const parseCommand = (args: Array<string>) => {
+const parseArgs = (args: Array<string>) => {
     let string = "";
     args.map(arg => {
         let substr = arg;
@@ -87,4 +38,4 @@ const parseCommand = (args: Array<string>) => {
     return string;
 }
 
-export { parseCommand, parsePath, resolveCurrWorkDir, resolvePath }
+export { parseArgs, parseArgs as parseCommand, parsePath }

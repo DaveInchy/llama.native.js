@@ -1,0 +1,15 @@
+import { __awaiter } from "tslib";
+import axios from "axios";
+const identify = () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`[axios]`, "signing a public identifier.");
+    const res = yield axios("https://mongodb-rest.vercel.app/api/auth/signin/public/key").then(response => response.data);
+    console.log(res);
+    if (res.error.message !== "none") {
+        throw new Error("[fetch] recieved error:" + res.error.message);
+    }
+    else {
+        return res.bearer;
+    }
+});
+export default identify;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaWRlbnRpZmllci5qcyIsInNvdXJjZVJvb3QiOiIuL3NyYy8iLCJzb3VyY2VzIjpbIm5ldHdvcmsvaWRlbnRpZmllci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsT0FBTyxLQUFLLE1BQU0sT0FBTyxDQUFDO0FBRTFCLE1BQU0sUUFBUSxHQUFHLEdBQVMsRUFBRTtJQUN4QixPQUFPLENBQUMsR0FBRyxDQUFDLFNBQVMsRUFBRSw4QkFBOEIsQ0FBQyxDQUFBO0lBQ3RELE1BQU0sR0FBRyxHQUFHLE1BQU0sS0FBSyxDQUFDLDREQUE0RCxDQUFDLENBQUMsSUFBSSxDQUFDLFFBQVEsQ0FBQyxFQUFFLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBQyxDQUFDO0lBQ3RILE9BQU8sQ0FBQyxHQUFHLENBQUMsR0FBRyxDQUFDLENBQUM7SUFDakIsSUFBSSxHQUFHLENBQUMsS0FBSyxDQUFDLE9BQU8sS0FBSyxNQUFNLEVBQUU7UUFDOUIsTUFBTSxJQUFJLEtBQUssQ0FBQyx5QkFBeUIsR0FBRyxHQUFHLENBQUMsS0FBSyxDQUFDLE9BQU8sQ0FBQyxDQUFDO0tBQ2xFO1NBQU07UUFDSCxPQUFPLEdBQUcsQ0FBQyxNQUFNLENBQUM7S0FDckI7QUFDTCxDQUFDLENBQUEsQ0FBQTtBQUNELGVBQWUsUUFBUSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGF4aW9zIGZyb20gXCJheGlvc1wiO1xyXG5cclxuY29uc3QgaWRlbnRpZnkgPSBhc3luYyAoKSA9PiB7XHJcbiAgICBjb25zb2xlLmxvZyhgW2F4aW9zXWAsIFwic2lnbmluZyBhIHB1YmxpYyBpZGVudGlmaWVyLlwiKVxyXG4gICAgY29uc3QgcmVzID0gYXdhaXQgYXhpb3MoXCJodHRwczovL21vbmdvZGItcmVzdC52ZXJjZWwuYXBwL2FwaS9hdXRoL3NpZ25pbi9wdWJsaWMva2V5XCIpLnRoZW4ocmVzcG9uc2UgPT4gcmVzcG9uc2UuZGF0YSk7XHJcbiAgICBjb25zb2xlLmxvZyhyZXMpO1xyXG4gICAgaWYgKHJlcy5lcnJvci5tZXNzYWdlICE9PSBcIm5vbmVcIikge1xyXG4gICAgICAgIHRocm93IG5ldyBFcnJvcihcIltmZXRjaF0gcmVjaWV2ZWQgZXJyb3I6XCIgKyByZXMuZXJyb3IubWVzc2FnZSk7XHJcbiAgICB9IGVsc2Uge1xyXG4gICAgICAgIHJldHVybiByZXMuYmVhcmVyO1xyXG4gICAgfVxyXG59XHJcbmV4cG9ydCBkZWZhdWx0IGlkZW50aWZ5OyJdfQ==

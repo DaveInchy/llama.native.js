@@ -1,5 +1,6 @@
 const sanitize = (exp: string) => `\/${exp}\/`;
-const expressions = ({
-    emailWithDomain: (domain: string) => new RegExp(sanitize(`(\S+)(@)(${domain})`)),
-    regEmail: new RegExp(sanitize(`(\S+)(.)(@)(.+)\.(.*)`))
+
+export default ({
+    isEmailDomain: (domain: string) => new RegExp(sanitize(`(\S+)(@)(${domain})`)),
+    isEmail: new RegExp(sanitize(`(\S+)(.)(@)(.+)\.(.*)`))
 });
