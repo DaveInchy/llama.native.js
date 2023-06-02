@@ -4,6 +4,7 @@ import express, { Express, Request } from "express";
 import http_server from "http";
 import promptCodex from "../jarvis/codex.js";
 import { Server, Socket as ServerSocket } from "socket.io";
+import { wait } from "../lib/utils.js";
 import { Handshake, Inference, Metadata } from "./sockets.js";
 
 dotenv.config();
@@ -28,6 +29,11 @@ export class ioServerController extends httpServerController {
     ioPool: Array<ServerSocket> = [];
     callbackListeners: CallableFunction;
     hsIdentifier: string;
+
+    maxClients: number = 4;
+    lockInference: boolean = false;
+    requestLocked: any;
+
     constructor(port: number) {
         super(port)
 
@@ -55,6 +61,7 @@ export class ioServerController extends httpServerController {
     }
 
     private async setupServer(port) {
+
         console.log(`[io]`, `starting`, `new Socket.IO`);
         this.ioServer = new Server(this.httpServer ? this.httpServer : port, {
             "cors": {
@@ -65,7 +72,7 @@ export class ioServerController extends httpServerController {
         console.log(`[io]`, `listening on`, `http://localhost:${port}`);
 
         this.ioServer.on(`connection`, (connSocket: ServerSocket) => {
-            console.log(`[io]`, "new connection")
+            console.log(`[io]`, "setting up new client connection")
             let index: number;
             index = this.ioPool.push(connSocket);
 
@@ -110,8 +117,15 @@ export class ioServerController extends httpServerController {
                 console.error(error);
             })
 
-            connSocket.on("inference:request", (query: Partial<Inference>) => {
-                console.log(`[io]`, `${query['message']}`, query)
+            connSocket.on("inference:request", async (query: Partial<Inference>) => {
+                console.log(`[io]`, `${query['message']}`, query);
+                // lock other requests, keep looping till one can execute again
+                while (this.requestLocked) {
+                    await wait(3).then(() => {
+                        console.log(`[io]`, `${this.ioPool[index]?.id} => waiting for inference, currently a process is running`);
+                    });
+                }
+                this.requestLocked = true;
                 const inferencedata = {
                     ...query,
                     ...{
@@ -126,39 +140,75 @@ export class ioServerController extends httpServerController {
 
             connSocket.on("inference:prompt", (query2: Partial<Inference>) => {
                 // run the whole llama prompt. and stream stdout back to streamListener
-                console.log(`[io]`, `${query2['message']}`, query2)
+                console.log(`[io]`, `${query2['message']}`, query2);
+
                 const promptOpts = query2.llama;
-                let tokens: Array<string> = [];
-                promptOpts.prompt === "jarvis-demo" ? promptCodex(`${promptOpts.instructions}`, (chunk) => connSocket.emit(`${query2.streamListener}`, {
-                    ...query2,
-                    ...{
-                        llama: {
-                            response: tokens.push(chunk as string) && tokens,
-                        }
-                    },
-                    ...{
-                        metadata: {
-                            message: `'${chunk}'`,
+                if (promptOpts.prompt === "jarvis-demo") {
 
-                        }
-                    }
-                })).then(() => connSocket.emit(`${query2.streamCloseListener}`, {
-                    ...query2,
-                    ...{
-                        llama: {
-                            response: tokens,
-                        }
-                    },
-                    ...{
-                        metadata: {
-                            message: "end of stream",
-                        }
-                    }
-                })) : null;
+                    let tokens: Array<string> = [];
+                    promptCodex(
+                        `${promptOpts.instructions}`,
+                    ).then((stream) => {
+
+                        stream.on('data', (token: string) => {
+                            token = `${token}`;
+                            if (!token.includes("RESPONSE") && !token.includes("CONTEXT") && !token.includes("INSTRUCT") && !token.includes("EXAMPLE")) {
+                                tokens.push(token);
+                                connSocket.emit(
+                                    `${query2.streamListener}`,
+                                    {
+                                        ...query2,
+                                        ...{
+                                            llama: {
+                                                response: tokens,
+                                            }
+                                        },
+                                        ...{
+                                            metadata: {
+                                                message: `${token}`,
+                                            }
+                                        }
+                                    }
+                                )
+                                process.stdout.write(token);
+                            }
+
+                        })
+
+                        stream.on(`end`, () => {
+                            var endOfStream = `\n\r\[End\ of\ Session\/Stream\]`;
+                            connSocket.emit(
+                                `${query2.streamCloseListener}`,
+                                {
+                                    ...query2,
+                                    ...{
+                                        llama: {
+                                            response: tokens,
+                                        }
+                                    },
+                                    ...{
+                                        metadata: {
+                                            message: `${tokens.join()}`,
+                                        }
+                                    }
+                                }
+                            );
+                            process.stdout.write(endOfStream);
+
+                            this.requestLocked = false;
+                            connSocket.disconnect();
+                            return;
+                        })
+
+                        stream.on(`error`, (err) => connSocket.emit("inference:error", err));
+
+                    })
+                }
+
+                console.log(`[io]`, `user connected`, `=>`, `created a socket connection.`)
             })
+        });
 
-            console.log(`[io]`, `user connected`, `=>`, `created a socket connection.`)
-        })
         return this.ioServer;
     }
 

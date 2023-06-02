@@ -12,7 +12,7 @@ export class ioClientController {
     hsResponseObject: Partial<Handshake>;
     hsIdentifier: string;
 
-    inferenceResults: Array<Array<string>>;
+    inferenceResults: string = "";
 
     constructor(serverAddress: string, identifier?: string) {
         this.ioAdres = serverAddress;
@@ -48,6 +48,14 @@ export class ioClientController {
             console.log(`[client]`, `successful handshake request`, response)
         }).catch(err => err);
 
+        this.ioClient.on("disconnect", () => {
+            this.ioClient.disconnect();
+        })
+
+        this.ioClient.on("close", () => {
+            this.ioClient.disconnect();
+        })
+
         return true;
     }
 
@@ -74,7 +82,7 @@ export class ioClientController {
             }
             this.ioClient.emit(`inference:request`, inferencedata);
             this.ioClient.on("inference:ready", (query2: Partial<Inference>) => {
-                props?.onready("Sending");
+                props?.onready("Jarvis is thinking...");
                 console.log(`[client]`, `sending prompt to model.`);
                 this.ioClient.emit("inference:prompt", {
                     ...inferencedata,
@@ -87,14 +95,18 @@ export class ioClientController {
                 });
             });
             this.ioClient.on(`inference:data`, (query2: Partial<Inference>) => {
-                var token: string = query2.metadata.message.replaceAll(`\'`, "");
+                var token: string = query2.metadata.message;
                 props?.ondata(token);
-                console.log(`[client]`, `recieved dialog +`, token);
+
+                this.inferenceResults = this.inferenceResults + token;
+                console.log(`[client]`, this.inferenceResults);
             })
             this.ioClient.on(`inference:end`, query2 => {
-                // this.inferenceResults.push(query2.llama.response);
                 props?.onend(query2.llama.response);
-                rs(query2.llama.response);
+                rs(query2.metadata.message);
+
+                console.log(`[client]`, `ended session with server.`);
+                this.ioClient.disconnect();
             })
             this.ioClient.on(`inference:error`, (error) => { console.error(error); rj(error) });
         });

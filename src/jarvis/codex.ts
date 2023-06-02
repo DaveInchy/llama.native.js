@@ -2,7 +2,7 @@ import path from "path";
 import process from "process";
 import stream from "stream";
 import { escape } from "querystring";
-import { resolvePath } from "../lib/files.js";
+import { resolvePath, saveResultAsFileMemory } from "../lib/files.js";
 import { parsePath } from "../lib/parsing.js";
 import { execShell } from "../lib/process.js";
 
@@ -10,7 +10,7 @@ import { execShell } from "../lib/process.js";
 
 // dotenv.config();
 
-const promptCodex = (inference_prompt: string, data_callback: CallableFunction): Promise<stream.Readable> => new Promise((resolve, reject) => {
+const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new Promise((resolve, reject) => {
 
     var tokens = "";
 
@@ -20,14 +20,14 @@ const promptCodex = (inference_prompt: string, data_callback: CallableFunction):
         parsePath(executable, false),
         `--seed`, `-1`,
         `--threads 4`,
-        `--n-predict -1`,
+        `--n-predict 2048`,
         `--top_k 40`,
         `--top_p 0.95`,
-        `--temp 0.5`,
+        `--temp 0.6`,
         `--repeat-last-n -1`,
         `--keep -1`, // 128 token based short memory // sample size
-        `--typical 4`, // how predictable should it be? // 4 seems optimal
-        `--repeat-penalty 1.2`,
+        `--typical 3`, // how predictable should it be? // 4 seems optimal
+        `--repeat-penalty 1.3`,
         `--mlock`,
         `--ctx-size 2000`,
         `--prompt-cache-all`,
@@ -44,23 +44,13 @@ const promptCodex = (inference_prompt: string, data_callback: CallableFunction):
 
         `-e`,
 
-        `-p \"\\n\\rCONTEXT: ${`(You as in Jarvis) You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed,\\n\\rYou sometimes make mistakes and some code ends up just wrong, contains hallicunations, bugs or will not compile at all so you make sure that you note this down if you acknowledge the fact.\\n\\rYou write no comments in the code itself, rather after the completed code.\\n\\rYou try to fullfill all tasks that have been instructed as accurately and logically as possible, you try to write performant and optimized code but its not mandatory.`}\\n\\n\\rINSTRUCTION: ${`${inference_prompt}` || `Sorry i don't wanna talk about it...`} \\n\\n\\rRESPONSE: Allright, I will help you make code for your project, I would write the following code:\\n\\r\`\`\`"`,
+        `-p \"\\n\\rCONTEXT: ${`(You as in Jarvis) You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed,\\n\\rYou sometimes make mistakes and some code ends up just wrong, contains hallicunations, bugs or will not compile at all so you make sure that you note this down if you acknowledge the fact.\\n\\rYou write no comments in the code itself, rather after the completed code.\\n\\rYou try to fullfill all tasks that have been instructed as accurately and logically as possible, you try to write performant and optimized code but its not mandatory.`}\\n\\n\\rINSTRUCTION: ${`${inference_prompt}` || `Sorry i don't wanna talk about it...`} \\n\\n\\rRESPONSE: Allright, I would write:\\n\\r\`\`\`"`,
 
     ];
 
-    return execShell(args, (dialog) => resolve(dialog))
-        .on('data', (token: string) => {
-            token = `${token}`;
-            tokens = tokens + token;
-            process.stdout.write(token);
-            data_callback(token);
-        })
-        .on(`end`, () => {
-            var endOfStream = `\n\r[EOS]`;
-            tokens = tokens + endOfStream;
-            process.stdout.write(endOfStream);
-        })
-        .on(`error`, (err) => reject(err));
+    const execution = execShell(args, (finalOutput) => saveResultAsFileMemory(finalOutput));
+    resolve(execution);
+    return execution
 });
 
 export default promptCodex;
