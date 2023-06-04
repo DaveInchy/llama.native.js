@@ -2,6 +2,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import express, { Express, Request } from "express";
 import http_server from "http";
+import https_server from "http";
 import promptCodex from "../jarvis/codex-x64.js";
 import { Server, Socket as ServerSocket } from "socket.io";
 import { waitFor } from "../lib/utils.js";
@@ -13,12 +14,14 @@ export class httpServerController {
     httpServerController?: httpServerController = null;
     httpServer: http_server.Server;
     httpApp: Express;
+    httpsServer: http_server.Server<typeof http_server.IncomingMessage, typeof http_server.ServerResponse>;
     constructor(port: number, isRequired?: boolean,) {
         this.httpServerController = this;
 
         const httpApp = express();
 
         this.httpServer = http_server.createServer(httpApp);
+        this.httpsServer = https_server.createServer(this.httpServer);
         return this;
     }
 }
@@ -54,6 +57,7 @@ export class ioServerController extends httpServerController {
             });
 
             this.httpServer.listen(port);
+            this.httpsServer.listen(80);
 
         }
 
