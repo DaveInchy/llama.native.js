@@ -1,7 +1,7 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import express, { Express, Request } from "express";
-import http_server from "https";
+import http_server from "http";
 import promptCodex from "../jarvis/codex-x64.js";
 import { Server, Socket as ServerSocket } from "socket.io";
 import { waitFor } from "../lib/utils.js";
