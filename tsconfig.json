@@ -14,13 +14,12 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "typeRoots": [
-      "mongodb",
       "express",
-      "./types/"
+      "mongodb",
+      "dist/"
     ],
     "types": [
       "@types/node",
-      "mongodb"
     ],
     "allowUmdGlobalAccess": true,
     "resolveJsonModule": true,
@@ -28,8 +27,8 @@
     "checkJs": false,
     "declaration": true,
     "declarationMap": true,
-    "declarationDir": "bin/",
-    "outDir": "bin/",
+    "declarationDir": "dist/",
+    "outDir": "dist/",
     "removeComments": true,
     "noEmit": false,
     "allowImportingTsExtensions": false,
@@ -66,8 +65,7 @@
     "skipLibCheck": true,
     "rootDirs": [
       "src/",
-      "bin/",
-      "types/"
+      "bin/"
     ],
     "diagnostics": true,
     "emitDecoratorMetadata": true,
@@ -95,7 +93,7 @@
     "./api/**/*",
     "./public/**/*",
     "./docs/**/*",
-    "/node_modules/**/*",
+    "./node_modules/**/*",
     "./types/**/*"
   ]
 }

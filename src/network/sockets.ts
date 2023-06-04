@@ -21,9 +21,10 @@ export interface Inference {
     streamListener: string | "inference:data",
     streamOpenListener: string | "inference:ready",
     streamCloseListener: string | "inference:end",
+    streamErrorListener?: string | "inference:error",
     llama: {
-        prompt: "jarvis-assistant" | "jarvis-codex" | "jarvis-demo"
-        instructions: string | "Hello Jarvis.",
+        prompt: "jarvis-assistant" | "jarvis-chat" | "jarvis-codex" | "jarvis-demo"
+        instructions: string,
         customContext?: boolean,
         context?: string,
         response?: Array<string>,

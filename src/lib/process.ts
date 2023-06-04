@@ -1,4 +1,6 @@
-import { ChildProcess, ExecException, exec as run } from "node:child_process";
+import dotenv, { DotenvConfigOutput } from "dotenv";
+import { ExecException, exec as run } from "node:child_process";
+import { PerformanceObserver } from "node:perf_hooks";
 import { Readable } from "node:stream";
 import { parseArgs } from "./parsing.js";
 
@@ -8,7 +10,7 @@ import { parseArgs } from "./parsing.js";
 //@depricated
 export const execShell = (args: Array<string>, callbackFunction?: (output: any) => any): Readable | null => {
     const shellCmd = parseArgs(args);
-    console.log("process spawned", shellCmd,);
+    console.log("[process] spawned", args);
     return run(shellCmd,
         (err, stdout, stderr) => {
             if (err) {
@@ -24,9 +26,35 @@ export const Run = (argv: string[], programFile?: string) => new Promise<Readabl
     var command = parseArgs([(programFile ? programFile : ""), ...argv]);
     console.log(`[process]`, `spawning child process ...`);
     return resolve(run(command, (error: ExecException, stdout: string, stderr: string) => {
-        if (error) {
-            console.error(`[process]`, `recieved an error =>`, error, stderr);
+        if (error.code !== 0) {
+            console.error(`[process]`, `recieved an error =>`, error.code, error.stack, stderr);
             reject(error);
         }
     }).stdout);
 })
+
+export const getHostConfig = () => {
+    console.log(`[process]`, `making a fingerprint of host properties for later callback.`);
+    dotenv.config();
+    return ({
+        USER: {
+            Home: process.env['HOME'],
+            Name: process.env['USER'],
+            Id: process.env['UID'],
+        },
+        SYSTEM: {
+            Name: process.env['HOSTNAME'],
+            Environment: process.env,
+            Architecture: process.arch === "x64" ? "x86_64" : process.arch,
+            Platform: process.platform,
+            OperatingSystem: process.platform,
+            OperatingSystemType: process.env['OSTYPE'],
+        },
+        HOST: {
+            ARCH: process.arch === "x64" ? "x86_64" : process.arch,
+            NAME: process.env['HOSTNAME'],
+            TYPE: process.env['HOSTTYPE'],
+            PATHS: process.env['PATH'],
+        }
+    })
+}

@@ -1,11 +1,11 @@
 {
   "name": "llama.native.js",
-  "version": "0.2.5",
+  "version": "1.0.0",
   "description": "use `npm i --save llama.native.js` to run lama.cpp models on your local machine. features a socket.io server and client that can do inference with the host of the model.",
   "cpu": [
     "x64"
   ],
-  "main": "bin/client.io.js",
+  "main": "dist/client.io.js",
   "type": "module",
   "scripts": {
     "setup": "npm i --save --include=dev",
@@ -13,7 +13,7 @@
     "start": "npm run serve",
     "build": "tsc -p ./tsconfig.json",
     "dev": "tsc -p ./tsconfig.json --watch",
-    "serve": "nodemon ./bin/serve.js"
+    "serve": "nodemon ./dist/serve.io.js"
   },
   "keywords": [
     "llm",
@@ -41,7 +41,6 @@
     "fs": "^0.0.1-security",
     "fs-extra": "^11.1.1",
     "fstream": "^1.0.12",
-    "mongodb": "^5.5.0",
     "nodemon": "^2.0.22",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",

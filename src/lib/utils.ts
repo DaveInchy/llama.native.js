@@ -1,10 +1,12 @@
-export const wait = (waitForSec = 0.1) => new Promise<void>((resolve, rejects) => {
+// used to await timeout after microseconds
+export const waitFor = (ms: number = 100) => new Promise<void>((resolve, rejects) => {
     try {
         setTimeout(() => {
             resolve();
-        }, waitForSec * 1000);
+        }, ms);
     } catch (err) {
         rejects(err);
     }
-    return
+    return;
 });
+

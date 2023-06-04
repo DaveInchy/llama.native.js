@@ -2,9 +2,9 @@ import axios from "axios";
 import dotenv from "dotenv";
 import express, { Express, Request } from "express";
 import http_server from "http";
-import promptCodex from "../jarvis/codex.js";
+import promptCodex from "../jarvis/codex-x64.js";
 import { Server, Socket as ServerSocket } from "socket.io";
-import { wait } from "../lib/utils.js";
+import { waitFor } from "../lib/utils.js";
 import { Handshake, Inference, Metadata } from "./sockets.js";
 
 dotenv.config();
@@ -130,7 +130,7 @@ export class ioServerController extends httpServerController {
 
                 // lock other requests, keep looping till one can execute again
                 while (this.requestLocked) {
-                    await wait(10).then(() => {
+                    await waitFor(10 * 1000).then(async () => {
                         //console.log(`[io]`, `${this.ioPool[index-1]?.id} => waiting for inference, currently a process is running`);
                         if (!this.requestLocked) {
                             console.log(`[io]`, `open spot found, continue-ing inference.`);
@@ -138,7 +138,8 @@ export class ioServerController extends httpServerController {
                     });
                 }
 
-                if (this.maxClients >= this.countValidConnections()) {
+                // fixed multi socket communications
+                if (this.maxClients < this.countValidConnections()) {
                     // lock it up
                     this.requestLocked = true;
                 }
@@ -146,7 +147,6 @@ export class ioServerController extends httpServerController {
                 const inferencedata = {
                     ...query,
                     ...{
-
                         metadata: {
                             message: "opening stream with tokens from llama.cpp",
                         }
@@ -193,7 +193,7 @@ export class ioServerController extends httpServerController {
                         })
 
                         stream.on(`end`, () => {
-                            var endOfStream = `\n\r\[End\ of\ Session\/Stream\]`;
+                            var endOfStream = `\n\r\[process] END OF STREAM\n`;
                             connSocket.emit(
                                 `${query2.streamCloseListener}`,
                                 {
