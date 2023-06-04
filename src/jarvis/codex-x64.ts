@@ -13,7 +13,7 @@ import { execShell, getHostConfig } from "../lib/process.js";
 const host = getHostConfig();
 
 const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new Promise((resolve, reject) => {
-    const executablePath = host.SYSTEM.Platform === "win32" ? "bin/x86_64/win32/llama.exe" : "bin/x86_64/linux/llama";
+    const executablePath = host.SYSTEM.Platform === "win32" ? "bin/x86_64/win32/llama.exe" : "bin/x86_64/linux/llama.openblas";
     const executable = resolvePath(executablePath);
     const modelPath = resolvePath("bin/models/ggml-v3-custom-13B-q5bit.bin");
     const args = [
@@ -44,7 +44,7 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
 
         `-e`,
 
-        `-p \"\\n\\rCONTEXT: ${`(You as in Jarvis) You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed,\\n\\rYou sometimes make mistakes and some code ends up just wrong, contains hallicunations, bugs or will not compile at all so you make sure that you note this down if you acknowledge the fact.\\n\\rYou write no comments in the code itself, rather after the completed code.\\n\\rYou try to fullfill all tasks that have been instructed as accurately and logically as possible, you try to write performant and optimized code but its not mandatory.`}\\n\\n\\rINSTRUCTION: ${`${inference_prompt}` || `Sorry i don't wanna talk about it...`} \\n\\n\\rRESPONSE: Yes ofcourse! This is what i\'d write:\\n\\r\`\`\`"`,
+        `-p \"\\n\\rCONTEXT: ${`(You as in Jarvis) You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed,\\n\\rYou sometimes make mistakes and some code ends up just wrong, contains hallicunations, bugs or will not compile at all so you make sure that you note this down if you acknowledge the fact.\\n\\rYou write no comments in the code itself, rather after the completed code.\\n\\rYou try to fullfill all tasks that have been instructed as accurately and logically as possible, you try to write performant and optimized code but its not mandatory.`}\\n\\n\\rINSTRUCTION: ${`${inference_prompt}` || `Sorry i don't wanna talk about it...`} \\n\\n\\rRESPONSE: Yes ofcourse! This is what i\'d write:\\n\\r\"`,
 
     ];
 
