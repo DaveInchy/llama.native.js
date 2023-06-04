@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const identify = async () => {
+const identify = async (username?, password?) => {
     console.log(`[axios]`, "signing a public identifier.")
     const res = await axios("https://mongodb-rest.vercel.app/api/auth/signin/public/key").then(response => response.data);
     console.log(res);

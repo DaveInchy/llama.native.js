@@ -15,28 +15,28 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
     var tokens = "";
 
     const executable = resolvePath("../llama.exe");
-    const modelPath = resolvePath("../llama.models/ggml-v3-guanaco-7B-q4bit.bin");
+    const modelPath = resolvePath("../llama.models/ggml-v3-guanaco-13B-q5bit.bin");
     const args = [
         parsePath(executable, false),
         `--seed`, `-1`,
-        `--threads 4`,
+        `--threads 10`,
         `--n-predict 2048`,
         `--top_k 40`,
         `--top_p 0.95`,
-        `--temp 0.6`,
+        `--temp 0.8`,
         `--repeat-last-n -1`,
         `--keep -1`, // 128 token based short memory // sample size
-        `--typical 3`, // how predictable should it be? // 4 seems optimal
+        `--typical 4`, // how predictable should it be? // 4 seems optimal
         `--repeat-penalty 1.3`,
         `--mlock`,
-        `--ctx-size 2000`,
+        `--ctx-size 2048`,
         `--prompt-cache-all`,
 
         `--model \"${parsePath(modelPath, false)}\"`,
         //"--mlock", //save memory between executions
         //" -e", // escape the prompt
         // "-ins", //instruction mode for alpaca based models
-        //"--no-mmap", // if`, ` --mlock bugs, use slow load
+        // "--no-mmap", // if`, ` --mlock bugs, use slow load
 
         //`-r "HUMAN: "`,
 

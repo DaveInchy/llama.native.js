@@ -10,12 +10,13 @@
     "useDefineForClassFields": true,
     "moduleDetection": "auto",
     "module": "ESNext",
-    "rootDir": "./src/",
+    "rootDir": "src/",
     "moduleResolution": "node",
     "baseUrl": ".",
     "typeRoots": [
       "mongodb",
-      "express"
+      "express",
+      "./types/"
     ],
     "types": [
       "@types/node",
@@ -25,17 +26,21 @@
     "resolveJsonModule": true,
     "allowJs": false,
     "checkJs": false,
-    "outDir": "bin",
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "bin/",
+    "outDir": "bin/",
     "removeComments": true,
     "noEmit": false,
+    "allowImportingTsExtensions": false,
     "importHelpers": true,
     "downlevelIteration": true,
-    "sourceRoot": "./src/",
+    "sourceRoot": "src/",
     "inlineSourceMap": true,
     "inlineSources": true,
     "noEmitOnError": false,
     "preserveConstEnums": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "esModuleInterop": true,
     "preserveSymlinks": true,
     "forceConsistentCasingInFileNames": true,
@@ -52,19 +57,45 @@
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "allowUnusedLabels": true,
     "allowUnreachableCode": true,
     "skipDefaultLibCheck": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "rootDirs": [
+      "src/",
+      "bin/",
+      "types/"
+    ],
+    "diagnostics": true,
+    "emitDecoratorMetadata": true,
+    "extendedDiagnostics": true,
+  },
+  "compileOnSave": true,
+  "buildOptions": {
+    "verbose": true,
+    "suppressImplicitAnyIndexErrors": true
+  },
+  "typeAcquisition": {
+    "include": [
+      "typescript",
+      "llama.native.js",
+      "socket.io",
+      "tslib"
+    ],
+    "enable": true
   },
   "exclude": [
     "./tsconfig.json",
+    "./package.json",
+    "./bin/**/*",
     "./dist/**/*",
+    "./api/**/*",
     "./public/**/*",
     "./docs/**/*",
-    "/node_modules/**/*"
+    "/node_modules/**/*",
+    "./types/**/*"
   ]
 }

@@ -8,7 +8,7 @@ export const PORT: number = Number.parseInt(process.env["PORT"]) || 9090;
 export const HOST = process.env["HOST"] || "0.0.0.0";
 export const IDENTIFIER = process.env["IDENTIFIER"] || null;
 
-export { ioClientController as Client, ioServerController as Server };
+export { ioClientController as ioClient, ioServerController as ioServer };
 
 export default function runServer() {
 

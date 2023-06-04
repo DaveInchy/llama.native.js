@@ -60,7 +60,15 @@ export class ioServerController extends httpServerController {
         return this;
     }
 
+    private countValidConnections = () => {
+        // checks if the returned values from actualfilter are true or not, then returns only the one that are validated
+        const validConnections = this.ioPool.filter((v: any, k: number) => v.connected ? true : false);
+        return validConnections.length;
+    }
+
     private async setupServer(port) {
+
+
 
         console.log(`[io]`, `starting`, `new Socket.IO`);
         this.ioServer = new Server(this.httpServer ? this.httpServer : port, {
@@ -110,7 +118,7 @@ export class ioServerController extends httpServerController {
             this.ioServer.in("insecure").fetchSockets().then(v => v.forEach(v => v.disconnect()));
 
             connSocket.on("close", () => {
-                console.log(`[io]`, `user disconnected,`, `bye!`, connSocket.disconnected)
+                console.log(`[io]`, `user disconnected,`, connSocket.disconnected)
             })
 
             connSocket.on("error", (error) => {
@@ -119,13 +127,22 @@ export class ioServerController extends httpServerController {
 
             connSocket.on("inference:request", async (query: Partial<Inference>) => {
                 console.log(`[io]`, `${query['message']}`, query);
+
                 // lock other requests, keep looping till one can execute again
                 while (this.requestLocked) {
-                    await wait(3).then(() => {
-                        console.log(`[io]`, `${this.ioPool[index]?.id} => waiting for inference, currently a process is running`);
+                    await wait(10).then(() => {
+                        //console.log(`[io]`, `${this.ioPool[index-1]?.id} => waiting for inference, currently a process is running`);
+                        if (!this.requestLocked) {
+                            console.log(`[io]`, `open spot found, continue-ing inference.`);
+                        }
                     });
                 }
-                this.requestLocked = true;
+
+                if (this.maxClients >= this.countValidConnections()) {
+                    // lock it up
+                    this.requestLocked = true;
+                }
+
                 const inferencedata = {
                     ...query,
                     ...{
@@ -170,7 +187,7 @@ export class ioServerController extends httpServerController {
                                         }
                                     }
                                 )
-                                process.stdout.write(token);
+                                // process.stdout.write(token);
                             }
 
                         })

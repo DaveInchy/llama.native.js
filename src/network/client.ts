@@ -8,14 +8,16 @@ export class ioClientController {
     ioId: number;
 
     ioValidated: boolean;
+    ioCloseCallback: CallableFunction;
 
     hsResponseObject: Partial<Handshake>;
     hsIdentifier: string;
 
     inferenceResults: string = "";
 
-    constructor(serverAddress: string, identifier?: string) {
+    constructor(serverAddress: string, identifier?: string, callbackOnClose?: CallableFunction) {
         this.ioAdres = serverAddress;
+        this.ioCloseCallback = callbackOnClose;
         this.hsIdentifier = identifier || process.env["IDENTIFIER"];
         var isClient: boolean = false;
         if (serverAddress) {
@@ -28,35 +30,49 @@ export class ioClientController {
     }
 
     private async setupClient() {
-        console.log(`[client]`, `starting`, `new Client`);
-        while (this.ioClient === undefined || this.ioClient === null) {
-            console.log(`[client]`, `resolving a connection to`, this.ioAdres);
-            this.ioClient = io_client(`${this.ioAdres}`);
+
+        try {
+            console.log(`[client]`, `starting`, `new Client`);
+            while (this.ioClient === undefined || this.ioClient === null) {
+                console.log(`[client]`, `spawning a Client instance connected with: `, this.ioAdres);
+                this.ioClient = io_client(`${this.ioAdres}`);
+            }
+            console.log(`[client]`, `connection with`, `${this.ioAdres}`);
+
+            console.log(`[client]`, `sending handshake request`)
+            this.requestHandshake({
+                handshake: {
+                    identifier: this.hsIdentifier
+                },
+                isHandshake: true,
+            }).then((response: any) => {
+                this.hsResponseObject = response.handshake;
+                this.ioValidated = this.hsResponseObject.success;
+                this.ioId = this.hsResponseObject.sid;
+                console.log(`[client]`, `successful handshake request`, response)
+            }).catch(err => {
+                this.ioCloseCallback(err);
+                this.ioClient = undefined;
+                throw new Error(err);
+            });
+
+            this.ioClient.on("disconnect", (reason, describe) => {
+                this.ioClient = undefined;
+                this.ioCloseCallback(`${describe} => ${reason}`);
+                throw new Error(`${describe} => ${reason}`);
+            })
+
+            this.ioClient.on("close", () => {
+                this.ioClient = undefined;
+                this.ioCloseCallback("connection lost");
+                throw new Error(`Connection LOST because server shut us out.`);
+            })
+
+            return true;
+        } catch (error) {
+            console.error(error)
+            return false;
         }
-        console.log(`[client]`, `connection with`, `${this.ioAdres}`);
-
-        console.log(`[client]`, `sending handshake request`)
-        this.requestHandshake({
-            handshake: {
-                identifier: this.hsIdentifier
-            },
-            isHandshake: true,
-        }).then((response: any) => {
-            this.hsResponseObject = response.handshake;
-            this.ioValidated = this.hsResponseObject.success;
-            this.ioId = this.hsResponseObject.sid;
-            console.log(`[client]`, `successful handshake request`, response)
-        }).catch(err => err);
-
-        this.ioClient.on("disconnect", () => {
-            this.ioClient.disconnect();
-        })
-
-        this.ioClient.on("close", () => {
-            this.ioClient.disconnect();
-        })
-
-        return true;
     }
 
     public requestInference(query?: Partial<Inference>, props?: {
@@ -106,7 +122,7 @@ export class ioClientController {
                 rs(query2.metadata.message);
 
                 console.log(`[client]`, `ended session with server.`);
-                this.ioClient.disconnect();
+                this.ioClient = undefined;
             })
             this.ioClient.on(`inference:error`, (error) => { console.error(error); rj(error) });
         });
