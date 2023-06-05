@@ -46,7 +46,7 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
 
         `-e`,
 
-        `--prompt \"${prompts.codex}\"`,
+        `--prompt \"${prompts.demo}\"`,
 
     ];
 
