@@ -42,7 +42,7 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
         // "--interactive", // interactivity mode for alpaca based models
         // `-r "HUMAN: "`, // the model will end his awnser with this, and this initiates your input on the terminal
 
-        `--instruct`, // instruction mode for alpaca based models
+        // `--instruct`, // instruction mode for alpaca based models
 
         `-e`,
 
