@@ -18,7 +18,7 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
     const modelPath = resolvePath("bin/models/ggml-v3-custom-13B-q5bit.bin");
 
     const prompts = {
-        codex: `\"\\n\\rCONTEXT: ${`You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed.\\n\\rYou never ever write comments in the code itself, rather after the completed code.\\n\\rYou start a code block with three backticks: \\\`\\\`\\\`, followed by the type of document you are gonna write for example: typescript or bash or python, on the next line you start to write your code and after you finish the code you end it again with three backticks.\\n\\rYou try to fullfill all tasks that have been instructed.`}\\n\\n\\rINSTRUCTION:\\n\\r${`${inference_prompt}`}.\\n\\n\\rRESPONSE: This is how\ \\n\\r\"`,
+        codex: `\"\\n\\rCONTEXT: ${`You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed.\\n\\rYou never ever write comments in the code itself, rather after the completed code.\\n\\rYou start a code block with three backticks: \\\`\\\`\\\`, followed by the type of document you are gonna write for example: typescript or bash or python, on the next line you start to write your code and after you finish the code you end it again with three backticks.\\n\\rYou try to fullfill all tasks that have been instructed.`}\\n\\n\\rINSTRUCTION:\\n\\r${`${inference_prompt}`}.\\n\\n\\rRESPONSE: This is how\\ \\n\\r\"`,
         demo: `\"\\n\\rCONTEXT: ${`You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed.\\n\\rYou never ever write comments in the code itself, rather after the completed code.\\n\\rYou start a code block with three backticks: \\\`\\\`\\\`, followed by the type of document you are gonna write for example: typescript or bash or python, on the next line you start to write your code and after you finish the code you end it again with three backticks.\\n\\rYou try to fullfill all tasks that have been instructed.`}\\n\\n\\rHUMAN:\\n\\r${`${inference_prompt}`}.\\n\\n\\rJARVIS:\\n\\r\"`
     }
     const args = [
@@ -26,25 +26,24 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
         `--seed`, `-1`,
         `--threads 2`,
         `--n-predict 4096`,
+        `-tfs`, // tailfree sampling
         `--top_k 40`,
         `--top_p 0.95`,
-        `--temp 0.6`,
-        `--repeat-last-n -1`, // 0? to repeat none, but then how does it complete.
+        `--temp 0.8`,
+        `--repeat-last-n 0`, // 0? to repeat none, but then how does it complete.
+        `--repeat-penalty 1.3`,
         `--keep -1`, // 128? token based short memory sample size
         `--typical 4`, // how predictable should it be? // 4 seems optimal? i have no clue what this parameter is.
-        `--repeat-penalty 1.3`,
-        `--mlock`,
+        `--mlock`, // better for performance between executaions
         `--ctx-size 2048`,
-        // `--prompt-cache-all`, maybe figure out how this works
-
+        `--prompt-cache-all`, // @@@ maybe figure out how this works
         `--model \"${parsePath(modelPath, false)}\"`,
-        //"--mlock", //save memory between executions
-        // "--no-mmap", // if`, ` --mlock bugs, use slow load
-
-        // "-i", // interactivity mode for alpaca based models
+        // "--no-mmap", // if --mlock bugs, use slow load
+        // `--multiline-input`, // multiline for the cli interactions without escaping to the new line.
+        // "--interactive", // interactivity mode for alpaca based models
         // `-r "HUMAN: "`, // the model will end his awnser with this, and this initiates your input on the terminal
 
-        //`-ins`, // instruction mode for alpaca based models
+        `--instruct`, // instruction mode for alpaca based models
 
         `-e`,
 
