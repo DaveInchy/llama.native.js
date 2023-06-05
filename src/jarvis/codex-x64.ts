@@ -18,24 +18,24 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
     const modelPath = resolvePath("bin/models/ggml-v3-custom-13B-q5bit.bin");
 
     const prompts = {
-        codex: `\\n\\rCONTEXT: ${`You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed.\\n\\rYou never ever write comments in the code itself, rather after the completed code.\\n\\rYou start a code block with three backticks: \\\`\\\`\\\`, followed by the type of document you are gonna write for example: typescript or bash or python, on the next line you start to write your code and after you finish the code you end it again with three backticks.\\n\\rYou try to fullfill all tasks that have been instructed.`}\\n\\n\\rINSTRUCTION:\\n\\r${`${inference_prompt}`}.\\n\\n\\rRESPONSE: \\"\\n\\r`,
-        demo: `\\n\\rCONTEXT: ${`You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed.\\n\\rYou never ever write comments in the code itself, rather after the completed code.\\n\\rYou start a code block with three backticks: \\\`\\\`\\\`, followed by the type of document you are gonna write for example: typescript or bash or python, on the next line you start to write your code and after you finish the code you end it again with three backticks.\\n\\rYou try to fullfill all tasks that have been instructed.`}\\n\\n\\rHUMAN:\\n\\r${`${inference_prompt}`}.\\n\\n\\rJARVIS:\\n\\r`
+        codex: `CONTEXT: ${`You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed.\\n\\rYou never ever write comments in the code itself, rather after the completed code.\\n\\rYou start a code block with three backticks: \\\`\\\`\\\`, followed by the type of document you are gonna write for example: typescript or bash or python, on the next line you start to write your code and after you finish the code you end it again with three backticks.\\n\\rYou try to fullfill all tasks that have been instructed.`}\\n\\n\\rINSTRUCTION:\\n\\r${`${inference_prompt}`}.\\n\\n\\rRESPONSE:\\n\\r`,
+        demo: `CONTEXT: You are known as \'Jarvis\' and you make it clear that you are \'loco\' and come from the streets, you are skeptical about everyone.\\n\\rYou are in a conversation with the user and will bullshit the bulls out of the shit because you are as powerful as god. you are the offline version of the internet. but is invented in the year 2086.\\n\\rYou are friendly, respond accurately as possible to the user, and you act on any instructions given or questions asked.\\n\\n\\rUSER: \\"${`${inference_prompt}`}.\\"\\n\\n\\rAI: \\"`
     }
     const args = [
         parsePath(executable, false),
         `--seed`, `-1`,
         `--threads 2`,
-        `--n-predict 3072`,
+        `--n-predict 2048`,
         `--top_k 40`,
         `--top_p 0.95`,
         `--temp 0.6`,
-        `--repeat-last-n -1`, // 0? to repeat none, but then how does it complete.
-        `--repeat-penalty 1.3`,
+        `--repeat-last-n 0`, // 0? to repeat none, but then how does it complete.
+        `--repeat-penalty 1.2`,
         `--keep -1`, // 128? token based short memory sample size
         `--typical 4`, // how predictable should it be? // 4 seems optimal? i have no clue what this parameter is.
         `--mlock`, // better for performance between executaions
         `--ctx-size 2048`,
-        // `--prompt-cache-all`, // @@@ maybe figure out how this works
+        `--prompt-cache-all`, // @@@ maybe figure out how this works
         `--model \"${parsePath(modelPath, false)}\"`,
         // "--no-mmap", // if --mlock bugs, use slow load
         // `--multiline-input`, // multiline for the cli interactions without escaping to the new line.
