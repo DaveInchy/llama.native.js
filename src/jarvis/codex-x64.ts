@@ -25,11 +25,11 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
         parsePath(executable, false),
         `--seed`, `-1`,
         `--threads 2`,
-        `--n-predict 4096`,
+        `--n-predict 3072`,
         `--top_k 40`,
         `--top_p 0.95`,
-        `--temp 0.8`,
-        `--repeat-last-n 0`, // 0? to repeat none, but then how does it complete.
+        `--temp 0.6`,
+        `--repeat-last-n -1`, // 0? to repeat none, but then how does it complete.
         `--repeat-penalty 1.3`,
         `--keep -1`, // 128? token based short memory sample size
         `--typical 4`, // how predictable should it be? // 4 seems optimal? i have no clue what this parameter is.
