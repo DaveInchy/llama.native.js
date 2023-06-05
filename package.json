@@ -1,6 +1,6 @@
 {
   "name": "llama.native.js",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "use `npm i --save llama.native.js` to run lama.cpp models on your local machine. features a socket.io server and client that can do inference with the host of the model.",
   "cpu": [
     "x64"
