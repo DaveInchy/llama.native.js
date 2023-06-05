@@ -1,7 +1,6 @@
 import path from "path";
 import process from "process";
 import stream from "stream";
-import { escape } from "querystring";
 import { resolvePath, saveResultAsFileMemory } from "../lib/files.js";
 import { parsePath } from "../lib/parsing.js";
 import { execShell, getHostConfig } from "../lib/process.js";
@@ -19,32 +18,31 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
     const args = [
         parsePath(executable, false),
         `--seed`, `-1`,
-        `--threads 6`,
-        `--n-predict 4096`,
+        `--threads 2`,
+        `--n-predict 2048`,
         `--top_k 40`,
-        `--top_p 0.95`,
-        `--temp 0.8`,
+        `--top_p 0.85`,
+        `--temp 0.6`,
         `--repeat-last-n -1`, // 0? to repeat none, but then how does it complete.
         `--keep -1`, // 128? token based short memory sample size
-        `--typical 4`, // how predictable should it be? // 4 seems optimal? i have no clue what this parameter is.
+        // `--typical 4`, // how predictable should it be? // 4 seems optimal? i have no clue what this parameter is.
         `--repeat-penalty 1.3`,
         `--mlock`,
         `--ctx-size 2048`,
-        // `--prompt-cache-all`,
+        // `--prompt-cache-all`, maybe figure out how this works
 
         `--model \"${parsePath(modelPath, false)}\"`,
         //"--mlock", //save memory between executions
         // "--no-mmap", // if`, ` --mlock bugs, use slow load
 
-        // "-i", //instruction mode for alpaca based models
+        // "-i", // interactivity mode for alpaca based models
+        // `-r "HUMAN: "`, // the model will end his awnser with this, and this initiates your input on the terminal
 
-        //`-r "HUMAN: "`,
-
-        //`-ins`,
+        //`-ins`, // instruction mode for alpaca based models
 
         `-e`,
 
-        `-p \"\\n\\rCONTEXT: ${`(You as in Jarvis) You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed,\\n\\rYou sometimes make mistakes and some code ends up just wrong, contains hallicunations, bugs or will not compile at all so you make sure that you note this down if you acknowledge the fact.\\n\\rYou write no comments in the code itself, rather after the completed code.\\n\\rYou try to fullfill all tasks that have been instructed as accurately and logically as possible, you try to write performant and optimized code but its not mandatory.`}\\n\\n\\rINSTRUCTION: ${`${inference_prompt}` || `Sorry i don't wanna talk about it...`} \\n\\n\\rRESPONSE: Yes ofcourse! This is what i\'d write:\\n\\r\"`,
+        `-p \"\\n\\rCONTEXT: ${`You are a very good personal coding assistant called Jarvis, You write code most of all and code-summaries if needed.\\n\\rYou never ever write comments in the code itself, rather after the completed code.\\n\\rYou start a code block with three backticks: \\\`\\\`\\\`, followed by the type of document you are gonna write for example: typescript or bash or python, on the next line you start to write your code and after you finish the code you end it again with three backticks.\\n\\rYou try to fullfill all tasks that have been instructed`}\\n\\n\\rHUMAN:\\n\\r${`${inference_prompt}`}.\\n\\n\\rJARVIS:\\n\\r\"`,
 
     ];
 

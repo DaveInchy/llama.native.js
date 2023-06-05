@@ -40,3 +40,9 @@ import { ioClient, ioInference, ioHandshake, ioMetadata } from "llama.native.js/
 > - a server that does handshakes for inference and making sure the connection is correctly validated and secure. for now theres only one pre processed prompt that can be executed on this server. It uses the os native binary for python and llama.cpp.
 > - the server puts them in rooms. secure or not secure, and thereby the server has authorativity.
 > - a client that requests handshakes for inference and identifies the connection if its secure or not.
+
+> ### Finalized a demo that allows you to prompt my own ai just like with chatgpt - however for now only `codex` is available
+
+# **Special Thanks**: 
+[TheBloke](https://patreon.com/TheBlokeAI?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_fan&utm_content=join_link) **on patreon**,
+*I have been dependend on his quantizations and huggingface repos. providing realtime conversion of many different types of llm's like the llama model and all iterations we use today. he provides a way for developers that dont have funds to generate these models or transform them live with frequently updated repositories for all the billions of parameters available.*
