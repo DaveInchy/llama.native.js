@@ -26,7 +26,6 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
         `--seed`, `-1`,
         `--threads 2`,
         `--n-predict 4096`,
-        `-tfs`, // tailfree sampling
         `--top_k 40`,
         `--top_p 0.95`,
         `--temp 0.8`,
@@ -36,7 +35,7 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
         `--typical 4`, // how predictable should it be? // 4 seems optimal? i have no clue what this parameter is.
         `--mlock`, // better for performance between executaions
         `--ctx-size 2048`,
-        `--prompt-cache-all`, // @@@ maybe figure out how this works
+        // `--prompt-cache-all`, // @@@ maybe figure out how this works
         `--model \"${parsePath(modelPath, false)}\"`,
         // "--no-mmap", // if --mlock bugs, use slow load
         // `--multiline-input`, // multiline for the cli interactions without escaping to the new line.
