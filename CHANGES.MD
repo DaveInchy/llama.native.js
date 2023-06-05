@@ -1,3 +1,6 @@
+import { ioClient, ioHandshake, ioInference, ioMetadata } from "llama.native.js/bin/client.io";
+import { ioClientController } from "llama.native.js/bin/network/client";
+
 # Changes
 
 Changes for `llama.native.js` per publication on the npm register for node packages.
@@ -19,14 +22,12 @@ npm setup && npm start
 This is supposed to work as single module,
 This is a minified module with all non-client related packages removed.
 */
-import { ioClientController } from "llama.native.js/bin/network/client";
 
 /*
 This is supposed to be the different types you can import,
 by themselves they are the ioClientController and the interfaces / structures used when communication was successful.
 This is a minified module with all non-client related packages removed.
 */
-import { ioClient, ioInference, ioHandshake, ioMetadata } from "llama.native.js/bin/client.io"
 ```
 
 > ### Added a way to not being required to install all non client related packages except `socket.io-client`
@@ -43,6 +44,4 @@ import { ioClient, ioInference, ioHandshake, ioMetadata } from "llama.native.js/
 
 > ### Finalized a demo that allows you to prompt my own ai just like with chatgpt - however for now only `codex` is available
 
-# **Special Thanks**: 
-[TheBloke](https://patreon.com/TheBlokeAI?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_fan&utm_content=join_link) **on patreon**,
-*I have been dependend on his quantizations and huggingface repos. providing realtime conversion of many different types of llm's like the llama model and all iterations we use today. he provides a way for developers that dont have funds to generate these models or transform them live with frequently updated repositories for all the billions of parameters available.*
+> modified:   src/jarvis/codex-x64.ts till i was happy with it and can duplicate into new ones.
