@@ -25,17 +25,17 @@ const promptCodex = (inference_prompt: string): Promise<stream.Readable> => new 
         parsePath(executable, false),
         `--seed`, `-1`,
         `--threads 2`,
-        `--n-predict 2048`,
-        `--top_k 40`,
-        `--top_p 0.95`,
+        `--n-predict 1000`,
+        `--top_k 45`,
+        `--top_p 0.88`,
         `--temp 0.6`,
-        `--repeat-last-n 0`, // 0? to repeat none, but then how does it complete.
+        `--repeat-last-n -1`, // 0? to repeat none, but then how does it complete.
         `--repeat-penalty 1.2`,
         `--keep -1`, // 128? token based short memory sample size
-        `--typical 4`, // how predictable should it be? // 4 seems optimal? i have no clue what this parameter is.
+        //`--typical 4`, // how predictable should it be? // 4 seems optimal? i have no clue what this parameter is.
         `--mlock`, // better for performance between executaions
         `--ctx-size 2048`,
-        `--prompt-cache-all`, // @@@ maybe figure out how this works
+        //`--prompt-cache-all`, // @@@ maybe figure out how this works
         `--model \"${parsePath(modelPath, false)}\"`,
         // "--no-mmap", // if --mlock bugs, use slow load
         // `--multiline-input`, // multiline for the cli interactions without escaping to the new line.
