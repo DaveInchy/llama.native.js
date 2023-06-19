@@ -19,7 +19,7 @@ export class ioClientController {
         this.ioAdres = serverAddress;
         this.ioCloseCallback = callbackOnClose;
         this.hsIdentifier = identifier || process.env["IDENTIFIER"];
-        var isClient: boolean = false;
+        let isClient: boolean = false;
         if (serverAddress) {
             isClient = true;
             while (!Promise.resolve(this.setupClient())) {
@@ -59,13 +59,11 @@ export class ioClientController {
             this.ioClient.on("disconnect", (reason, describe) => {
                 this.ioClient = undefined;
                 this.ioCloseCallback(`${describe} => ${reason}`);
-                throw new Error(`${describe} => ${reason}`);
             })
 
             this.ioClient.on("close", () => {
                 this.ioClient = undefined;
                 this.ioCloseCallback("connection lost");
-                throw new Error(`Connection LOST because server shut us out.`);
             })
 
             return true;

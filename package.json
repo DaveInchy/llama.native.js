@@ -1,6 +1,6 @@
 {
   "name": "llama.native.js",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "use `npm i --save llama.native.js` to run lama.cpp models on your local machine. features a socket.io server and client that can do inference with the host of the model.",
   "cpu": [
     "x64"
@@ -29,7 +29,7 @@
     "generation"
   ],
   "author": "space dave <github.com/daveinchy>",
-  "license": "IDGAS",
+  "license": "IDGASHIT",
   "dependencies": {
     "axios": "^1.4.0",
     "bufferutil": "^4.0.7",
